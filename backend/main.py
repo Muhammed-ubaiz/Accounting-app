@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,12 +15,17 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
+frontend_url = os.getenv("FRONTEND_URL")
+
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174"
 ]
+
+if frontend_url:
+    origins.append(frontend_url)
 
 
 app.add_middleware(
@@ -50,3 +56,9 @@ app.include_router(
     prefix="/categories",
     tags=["Categories"]
 )
+
+
+@app.get("/")
+def root():
+
+    return {"status": "ok"}

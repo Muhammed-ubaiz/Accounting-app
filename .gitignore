@@ -1,0 +1,7 @@
+*.log
+*.pyc
+__pycache__/
+.vscode/
+backend/accounting.db
+backend/__pycache__/
+backend/routes/__pycache__/

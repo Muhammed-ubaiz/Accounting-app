@@ -1,11 +1,12 @@
 import bcrypt
+import os
 from jose import jwt
 from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
-SECRET_KEY = "supersecretkey"
+SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(
