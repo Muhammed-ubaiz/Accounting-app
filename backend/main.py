@@ -4,35 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 
 from database import Base, engine
-
-from routes import auth_routes
-from routes import transactions
-from routes import categories
-
-
-Base.metadata.create_all(bind=engine)
-
-
-def ensure_transaction_user_id_column():
-    inspector = inspect(engine)
-    transaction_columns = [
-        column["name"]
-        for column in inspector.get_columns("transactions")
-    ]
-
-    if "user_id" not in transaction_columns:
-        with engine.begin() as connection:
-            connection.execute(
-                text("ALTER TABLE transactions ADD COLUMN user_id INTEGER")
-            )
-
-
-ensure_transaction_user_id_column()
+from routes import auth_routes, transactions, categories
 
 
 app = FastAPI()
 
 
+# ── CORS ──────────────────────────────────────────────────────────────────────
 frontend_url = os.getenv("FRONTEND_URL", "")
 
 origins = [
@@ -46,15 +24,10 @@ origins = [
 
 if frontend_url:
     origins.extend(
-        [
-            url.strip()
-            for url in frontend_url.split(",")
-            if url.strip()
-        ]
+        [url.strip() for url in frontend_url.split(",") if url.strip()]
     )
 
 allowed_origins = list(dict.fromkeys(origins))
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,28 +38,32 @@ app.add_middleware(
 )
 
 
-app.include_router(
-    auth_routes.router,
-    prefix="/auth",
-    tags=["Authentication"]
-)
+# ── DB Migration ───────────────────────────────────────────────────────────────
+def ensure_transaction_user_id_column():
+    try:
+        inspector = inspect(engine)
+        columns = [col["name"] for col in inspector.get_columns("transactions")]
+        if "user_id" not in columns:
+            with engine.begin() as conn:
+                conn.execute(
+                    text("ALTER TABLE transactions ADD COLUMN user_id INTEGER")
+                )
+            print("✅ user_id column added to transactions")
+    except Exception as e:
+        print(f"⚠️  Migration warning: {e}")
 
 
-app.include_router(
-    transactions.router,
-    prefix="/transactions",
-    tags=["Transactions"]
-)
+Base.metadata.create_all(bind=engine)
+ensure_transaction_user_id_column()
 
 
-app.include_router(
-    categories.router,
-    prefix="/categories",
-    tags=["Categories"]
-)
+# ── Routers ────────────────────────────────────────────────────────────────────
+app.include_router(auth_routes.router, prefix="/auth", tags=["Authentication"])
+app.include_router(transactions.router, prefix="/transactions", tags=["Transactions"])
+app.include_router(categories.router, prefix="/categories", tags=["Categories"])
 
 
+# ── Health check ───────────────────────────────────────────────────────────────
 @app.get("/")
 def root():
-
     return {"status": "ok"}
