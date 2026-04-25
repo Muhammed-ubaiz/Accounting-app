@@ -30,6 +30,10 @@ class Transaction(Base):
 
     category = relationship("Category")
 
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+
+    user = relationship("User")
+
 
 class User(Base):
 
