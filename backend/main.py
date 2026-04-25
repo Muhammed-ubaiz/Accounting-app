@@ -33,23 +33,32 @@ ensure_transaction_user_id_column()
 app = FastAPI()
 
 
-frontend_url = os.getenv("FRONTEND_URL")
+frontend_url = os.getenv("FRONTEND_URL", "")
 
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
-    "http://127.0.0.1:5174"
+    "http://127.0.0.1:5174",
+    "https://accounting-app-neon-one.vercel.app",
 ]
 
 if frontend_url:
-    origins.append(frontend_url)
+    origins.extend(
+        [
+            url.strip()
+            for url in frontend_url.split(",")
+            if url.strip()
+        ]
+    )
+
+allowed_origins = list(dict.fromkeys(origins))
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

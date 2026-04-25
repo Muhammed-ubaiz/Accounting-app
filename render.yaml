@@ -10,3 +10,5 @@ services:
         value: sqlite:///./accounting.db
       - key: SECRET_KEY
         generateValue: true
+      - key: FRONTEND_URL
+        value: https://accounting-app-neon-one.vercel.app
