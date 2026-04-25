@@ -41,6 +41,7 @@ origins = [
     "http://localhost:5174",
     "http://127.0.0.1:5174",
     "https://accounting-app-neon-one.vercel.app",
+    "https://accounting-app-git-main-muhammed-ubaizs-projects.vercel.app",
 ]
 
 if frontend_url:
