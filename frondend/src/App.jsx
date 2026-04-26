@@ -26,7 +26,7 @@ function Home() {
           <TransactionForm onTransactionAdded={handleDataChange} />
           <Charts refreshKey={refreshKey} />
         </div>
-        <TransactionList onTransactionChange={handleDataChange} />
+        <TransactionList onTransactionChange={handleDataChange} refreshKey={refreshKey} />
       </div>
     </div>
   );

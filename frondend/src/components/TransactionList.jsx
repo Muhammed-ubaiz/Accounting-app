@@ -8,7 +8,7 @@ import {
   showTransactionDetails
 } from "../utils/alerts";
 
-function TransactionList({ onTransactionChange }) {
+function TransactionList({ onTransactionChange, refreshKey }) {
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -34,7 +34,7 @@ function TransactionList({ onTransactionChange }) {
   useEffect(() => {
     fetchTransactions();
     fetchCategories();
-  }, []);
+  }, [refreshKey]);
 
   const handleEdit = async (transaction) => {
     const result = await showAmountPrompt(transaction.amount);
