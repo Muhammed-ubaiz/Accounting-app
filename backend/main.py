@@ -11,27 +11,17 @@ app = FastAPI()
 
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-frontend_url = os.getenv("FRONTEND_URL", "")
-
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "https://accounting-app-neon-one.vercel.app",
-    "https://accounting-app-git-main-muhammed-ubaizs-projects.vercel.app",
-]
-
-if frontend_url:
-    origins.extend(
-        [url.strip() for url in frontend_url.split(",") if url.strip()]
-    )
-
-allowed_origins = list(dict.fromkeys(origins))
+# Regex covers ALL *.vercel.app preview/production deployments automatically.
+# Localhost origins are kept for local development.
+CORS_ORIGIN_REGEX = (
+    r"https://.*\.vercel\.app"
+    r"|http://localhost:\d+"
+    r"|http://127\.0\.0\.1:\d+"
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
