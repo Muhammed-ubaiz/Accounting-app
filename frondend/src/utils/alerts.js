@@ -20,7 +20,7 @@ export const showError = (title, text) =>
     confirmButtonColor: "#fb7185"
   });
 
-export const showConfirm = (title, text, confirmButtonText) =>
+export const showConfirm = (title, text, confirmButtonText = "Yes, delete") =>
   Swal.fire({
     icon: "warning",
     title,
